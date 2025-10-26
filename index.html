@@ -1,67 +1,96 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>Wi-Fi Gratuito</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wi-Fi Gratuito - Salão Beauty</title>
     <style>
-        
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            background: #1877F2;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #166FE5;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">✂️</div>
-        <h1>Salão Beauty</h1>
-        <p class="subtitle">Wi-Fi Gratuito - Faça check-in e conecte-se!</p>
-        
-        </div>
-        
-        <div class="instructions">
-            <strong>Como conectar:</strong><br>
-            1. Toque em um botão abaixo<br>
-            2. Faça check-in na sua rede social<br>
-            3. Internet liberada automaticamente!
-        </div>
-
-        <a href="https://www.facebook.com/maranathasaude/checkin" class="btn btn-facebook">
-            📍 Check-in Facebook
-        </a>
-        
-        <a href="https://www.instagram.com/maranathasaude/">
-            📷 Instagram
-        </a>
-        
-        <a href="https://google.com" class="btn btn-skip">
-            ⏩ Acessar Internet
-        </a>
-        
-        <div class="footer">
-            Ao conectar, você concorda com nossos termos de uso.
-        </div>
+        <h1>🌐 Wi-Fi Gratuito</h1>
+        <p>Clique no botão abaixo para conectar à internet</p>
+        <button class="btn" onclick="authorize()">Conectar</button>
     </div>
 
     <script>
-        // Redirecionamento automático após 30 segundos
-        setTimeout(function() {
-            window.location.href = 'https://google.com';
-        }, 30000);
-        
-        // Contador regressivo
-        let timeLeft = 30;
-        const timerElement = document.createElement('div');
-        timerElement.style.marginTop = '10px';
-        timerElement.style.fontSize = '12px';
-        timerElement.style.color = '#666';
-        document.querySelector('.footer').appendChild(timerElement);
-        
-        const timer = setInterval(function() {
-            timeLeft--;
-            timerElement.textContent = `Redirecionando em ${timeLeft} segundos...`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timer);
+        // Função para obter parâmetros da URL
+        function getUrlParams() {
+            var params = {};
+            var queryString = window.location.search.substring(1);
+            var pairs = queryString.split('&');
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i].split('=');
+                params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
             }
-        }, 1000);
+            return params;
+        }
+
+        // Função para autorizar e redirecionar
+        function authorize() {
+            var params = getUrlParams();
+            var redirectUri = params.redirect_uri;
+            var desiredUrl = params.continue || 'http://www.google.com';
+            var ts = params.ts;
+            var userHash = params.user_hash;
+
+            // Parâmetros opcionais - configuramos alguns valores padrão
+            var sessionTimeout = 28800; // 8 horas em segundos
+            var idleTimeout = 300; // 5 minutos
+            var downloadKbps = 2048; // 2 Mbps em kbps
+            var uploadKbps = 1024; // 1 Mbps em kbps
+
+            // Construir a URL de redirecionamento para o roteador
+            var finalUrl = redirectUri + 
+                '?continue=' + encodeURIComponent(desiredUrl) +
+                '&ts=' + ts +
+                '&user_hash=' + userHash +
+                '&session_timeout=' + sessionTimeout +
+                '&idle_timeout=' + idleTimeout +
+                '&download_kbps=' + downloadKbps +
+                '&upload_kbps=' + uploadKbps;
+
+            // Redirecionar
+            window.location.href = finalUrl;
+        }
     </script>
 </body>
 </html>
